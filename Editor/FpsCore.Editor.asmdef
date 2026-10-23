@@ -1,0 +1,32 @@
+{
+    "name": "FPSCore.Editor",
+    "rootNamespace": "",
+    "references": [
+        "FPSCore"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FPS_CINEMACHINE",
+        "FPS_INPUTSYSTEM"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.1.7",
+            "define": "FPS_CINEMACHINE"
+        },
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.19.0",
+            "define": "FPS_INPUTSYSTEM"
+        }
+    ],
+    "noEngineReferences": false
+}
