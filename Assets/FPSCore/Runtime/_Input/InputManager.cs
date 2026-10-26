@@ -99,6 +99,15 @@ public class InputManager : MonoBehaviour
 
     public bool UsingAsset => _runtimeAsset != null;
 
+    /// <summary>Action map the game reads (a clone of the asset). Null while on code bindings only.</summary>
+    public InputActionMap Map => _map;
+
+    /// <summary>Project input asset assigned in the inspector (the original, never rebound).</summary>
+    public InputActionAsset InputAsset => inputAsset;
+
+    /// <summary>Name of the action map read from the asset.</summary>
+    public string ActionMapName => actionMapName;
+
     /// <summary>False while a UI is open or gameplay was switched off.</summary>
     public bool GameplayEnabled => _gameplayOn && !UIMode;
 
