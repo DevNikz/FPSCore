@@ -1,21 +1,37 @@
-# FPSCore
-Standalone FPS Core System for Unity
-- Plug-N-Play. No need to worry about dependencies. Hopefully..lol.
-- This is an independent FPS System utilized by Shop Keeper Prototype.
-- This FPS System features the following:
-    - Head Lock (Pitch Limit, Max Head Yaw, and Body Mesh Alignment)
-    - Movement (Walk Speed, Crouch Speed, and Air Control)
-    - Sprint (Toggleable Limited Stamina, Sprint Speed, Max Stamina, etc.)
-    - Jump
-    - Crouch
-    - Toggleable Zoom In
-    - Toggleable View Bob
-  - Demo Scene in: ../FPSCore/Demo/FPSCore_Demo.unity
-  - Prefab Folder contains the Player and the Input Manager. 
-    (will update it soon for the keybind remap..)
+# FPS CORE
 
-# Technical Details
-- This package will automatically check your Unity Project for missing dependencies.
-- Dependencies:
-    - Cinemachine 3.1.7
-    - Input System 1.19.0
+### Remapping Keybind Input
+
+- Using the Demo Scene: `FPSCore_Demo`
+- Go To `InputManager` -> There should be an `Input Remapper` Component Attached.
+- Right Click `Input Remapper` Component then click `Populate From Asset`
+  - This button automatically detects if the game using a custom input asset from the `Input Manager`
+  - It will auto-populate all of the input action mappings into the `Designer Default Entries`.
+  - This is where you can adjust keybinds in the editor, without having to adjust it inside the asset itself.
+    - You can toggle keybinds as: `Hidden` and/or `Locked`
+    - `Keybinds` can have multiple defaults.
+    - `Keybinds` are automatically reflected in the built-in Keybind UI (`F1`)
+  - If your project allows it, you can switch the UI to scene mode in the `Keybind Menu` component inherited by the `Input UI` object.
+  - This allows you to reference the following fields needed for the Keybind UI:
+    - **Panel Root**
+      - Root object of your UI. This is where your Keybind menu lives.
+    - **Row Container**
+      - Root object of Keybind Row Container. This is a scroll rect object, specifically the object that contains the vertical scroll container.
+    - **Row Prefab**
+      - `Keybind Row` Object. Your Object that displays your individual keybinds as rows.
+      - It needs the following fields:
+        - Action Label
+        - Bind Button
+        - Bind Text
+        - Reset Button
+    - **Reset All Button**
+    - **Close Button**
+    - **Listening Overlay (OPTIONAL)**
+      - A stretched UI panel / image object in transparent black
+    - **Listening Text (OPTIONAL)**
+      - A TextMeshPro object inside the overlay that says "Listening for input..." or similar.
+    - **Status Text (OPTIONAL)**
+      - A TextMeshPro object that displays messages such as:
+        - "Swapped Keys.."
+        - "Locked Keys.."
+        - etc.
