@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 47772756}
   - component: {fileID: 47772755}
   - component: {fileID: 47772754}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243,8 +243,10 @@ GameObject:
   - component: {fileID: 203540259}
   - component: {fileID: 203540258}
   - component: {fileID: 203540257}
-  m_Layer: 0
-  m_Name: Cube (2)
+  - component: {fileID: 203540262}
+  - component: {fileID: 203540261}
+  m_Layer: 6
+  m_Name: Interactable Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -343,6 +345,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &203540261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203540256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 602fce7014140164eb28728904c52636, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::Interactable
+  interactable: 1
+  promptText: 
+  prompts: []
+  IsDebugEnabled: 0
+--- !u!54 &203540262
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203540256}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -935,8 +980,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3476640955920598647, guid: 7626e08f4fcee4d43b6c17710170014c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8798335030951621766}
   m_SourcePrefab: {fileID: 100100000, guid: 7626e08f4fcee4d43b6c17710170014c, type: 3}
+--- !u!1 &8798335030951621765 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3476640955920598647, guid: 7626e08f4fcee4d43b6c17710170014c, type: 3}
+  m_PrefabInstance: {fileID: 8798335030951621764}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8798335030951621766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8798335030951621765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f0670e3a3d0eee4fb0b282bde4bfeb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::Interactor
+  origin: {fileID: 0}
+  interactRange: 3
+  rayMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  drawGizmos: 1
+  _targetDebug: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

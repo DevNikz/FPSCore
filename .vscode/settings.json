@@ -72,6 +72,6 @@
     ],
     "dotnet.defaultSolution": "FPSCore.sln",
     "dotrush.roslyn.projectOrSolutionFiles": [
-        "d:\\UnityProj\\ProjectFPSCore\\ProjectFPSCore.sln"
+        "d:\\UnityProj\\FPSCore\\FPSCore.sln"
     ]
 }
