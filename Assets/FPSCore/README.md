@@ -53,9 +53,8 @@
 ### About
 
 * Carrier is an addon for FPS Core, which allows objects to be carried by the player.
-* Each `Interactable` object has an `Interact` call you can use to invoke game-specific events for your project such as the following:
-  * Opening a Computer Terminal
-  * Interacting with a door
-  * etc.
-* To add this addon: Go to `Player (Prefab)` -> `First Person Controller (Component)` -> Scroll down, there should be an `Addons` Foldout that lists the `Interactor` component as a button.
-* You can adjust the `Interact Range` in the inspector based on your needs.
+* To add this addon: Go to `Interactable (Object)` -> Scroll down, there should be an `Addons` Foldout that lists the `Carrier (Addon)` component as a button.
+* Carrier currently has 1 sub-addon:
+  * Carrier Ticker (Optimization)
+    * Optimization helper script that makes carrier objects have a fixed tick rate, and rate-limits it.
+    * To add this sub-addon: Go to `Carrier (Component)` -> Scroll down, there should be an `Addons` Foldout that lists the `Carrier Ticker` component.
