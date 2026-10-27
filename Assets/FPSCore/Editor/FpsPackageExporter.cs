@@ -108,21 +108,25 @@ public static class FpsPackageExporter
         return File.Exists(filePath);
     }
 
+    /// <summary>Addon ids as paths relative to the addon folder, e.g. "_Main/Interactable", "_SubAddons/Grabber".</summary>
     public static List<string> GetAddonNames()
     {
         if (!AssetDatabase.IsValidFolder(AddonFolder))
         {
             return new List<string>();
         }
+
+        string prefix = AddonFolder + "/";
         return AssetDatabase
-            .GetSubFolders(AddonFolder)
-            .Select(folder => Path.GetFileName(folder))
+            .GetSubFolders(AddonFolder) // _Main, _SubAddons
+            .SelectMany(group => AssetDatabase.GetSubFolders(group)) // individual addons
+            .Select(folder => folder.Substring(prefix.Length))
             .ToList();
     }
 
     static string GetAddonFileName(string addonName)
     {
-        return $"FPSCore_{addonName}.unitypackage";
+        return $"FPSCore_{addonName.Replace('/', '_').TrimStart('_')}.unitypackage";
     }
 
     static string[] GetBaseAssetPaths()
