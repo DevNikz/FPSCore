@@ -770,7 +770,6 @@ GameObject:
   - component: {fileID: 1874225749}
   - component: {fileID: 1874225748}
   - component: {fileID: 1874225747}
-  - component: {fileID: 1874225753}
   m_Layer: 6
   m_Name: Grabbable Cube
   m_TagString: Untagged
@@ -915,33 +914,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!114 &1874225753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1874225746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f81a8648b13908499a0e716e117dcf5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FPSCore::Carriable
-  followGain: 15
-  maxFollowSpeed: 20
-  holdSize: 0
-  rotateGain: 12
-  maxRotateSpeed: 30
-  throwMultiplier: 1
-  collisionRestoreDelay: 0.3
-  breakGrace: 1
-  overrideHoldRotation: 0
-  holdRotation: {x: 0, y: 0, z: 0}
-  levelHold: 0
-  holdOffset: {x: 0, y: 0, z: 0}
-  keepClearOfCamera: 0
-  cameraClearance: 0.05
-  lockToView: 0
 --- !u!1 &2026517918
 GameObject:
   m_ObjectHideFlags: 0
