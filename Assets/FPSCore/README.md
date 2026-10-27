@@ -1,6 +1,6 @@
 # FPS CORE
 
-### Remapping Keybind Input
+### REMAPPING KEYBIND INPUT
 
 - Using the Demo Scene: `FPSCore_Demo`
 - Go To `InputManager` -> There should be an `Input Remapper` Component Attached.
@@ -10,7 +10,7 @@
   - This is where you can adjust keybinds in the editor, without having to adjust it inside the asset itself.
     - You can toggle keybinds as: `Hidden` and/or `Locked`
     - `Keybinds` can have multiple defaults.
-    - `Keybinds` are automatically reflected in the built-in Keybind UI (`F1`)
+    - `Keybinds` are automatically**** reflected in the built-in Keybind UI (`F1`)
   - If your project allows it, you can switch the UI to scene mode in the `Keybind Menu` component inherited by the `Input UI` object.
   - This allows you to reference the following fields needed for the Keybind UI:
     - **Panel Root**
@@ -26,7 +26,7 @@
         - Reset Button
     - **Reset All Button**
     - **Close Button**
-    - **Listening Overlay (OPTIONAL)**
+    - Listening Overlay (OPTIONAL)
       - A stretched UI panel / image object in transparent black
     - **Listening Text (OPTIONAL)**
       - A TextMeshPro object inside the overlay that says "Listening for input..." or similar.
@@ -35,3 +35,27 @@
         - "Swapped Keys.."
         - "Locked Keys.."
         - etc.
+
+## Interactor (Main Addon)
+
+### About
+
+* Interactor is the main addon for FPS Core, which allows objects to be interacted.
+* Each `Interactable` object has an `Interact` call you can use to invoke game-specific events for your project such as the following:
+  * Opening a Computer Terminal
+  * Interacting with a door
+  * etc.
+* To add this addon: Go to `Player (Prefab)` -> `First Person Controller (Component)` -> Scroll down, there should be an `Addons` Foldout that lists the `Interactor` component as a button.
+* You can adjust the `Interact Range` in the inspector based on your needs.
+
+## Carrier (Addon)
+
+### About
+
+* Carrier is an addon for FPS Core, which allows objects to be carried by the player.
+* Each `Interactable` object has an `Interact` call you can use to invoke game-specific events for your project such as the following:
+  * Opening a Computer Terminal
+  * Interacting with a door
+  * etc.
+* To add this addon: Go to `Player (Prefab)` -> `First Person Controller (Component)` -> Scroll down, there should be an `Addons` Foldout that lists the `Interactor` component as a button.
+* You can adjust the `Interact Range` in the inspector based on your needs.

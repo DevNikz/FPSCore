@@ -5,7 +5,7 @@ using UnityEngine;
 /// Carrying lives in the Carrier addon, which reports full hands through IHandsFull. While
 /// carrying, Target is only an Interactable that allows Holding (Interactable.CanInteractIn).
 /// </summary>
-[FPSAddon("Interactor")]
+[FPSAddon("Interactor (Main | Add this first)")]
 [RequireComponent(typeof(FirstPersonController))]
 [DefaultExecutionOrder(50)]
 [DisallowMultipleComponent]

@@ -5,6 +5,7 @@ using UnityEngine;
 /// Default ICarriableTicker, created on the first carry or claim.
 /// Set Carriable.Ticker before that (e.g. in a BeforeSceneLoad hook) to use another.
 /// </summary>
+[CarriableAddon("Carriable Physics Ticker (Optimization)")]
 public sealed class CarriableTicker : MonoBehaviour, ICarriableTicker
 {
     private readonly List<Carriable> _active = new();

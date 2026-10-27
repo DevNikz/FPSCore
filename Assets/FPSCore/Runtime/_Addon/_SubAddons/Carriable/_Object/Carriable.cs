@@ -3,7 +3,9 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[InteractableAddon("Carriable (Addon)")]
 [RequireComponent(typeof(Rigidbody), typeof(Interactable))]
+[DisallowMultipleComponent]
 public class Carriable : MonoBehaviour
 {
     [Tooltip("Carry follow strength.")]
