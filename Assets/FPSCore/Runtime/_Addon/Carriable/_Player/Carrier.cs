@@ -82,17 +82,17 @@ public class Carrier : MonoBehaviour, IHandsFull
 
     [Header("Throw (camera swing)")]
     [SerializeField]
-    private bool swingThrowEnabled = true;
+    private bool swingThrowEnabled = false;
 
     [Tooltip("Swing throw for small objects (held at the side). Off = hold-E only.")]
     [SerializeField]
     private bool swingSmall;
 
     [SerializeField]
-    private bool swingMedium = true;
+    private bool swingMedium = false;
 
     [SerializeField]
-    private bool swingLarge = true;
+    private bool swingLarge = false;
 
     [Tooltip("View turn speed that starts a swing (deg/s).")]
     [SerializeField]

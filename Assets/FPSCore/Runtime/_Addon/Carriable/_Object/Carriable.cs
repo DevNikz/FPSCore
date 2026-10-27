@@ -52,8 +52,8 @@ public class Carriable : MonoBehaviour
     bool levelHold;
 
     [Tooltip("Shift the pivot so the visual center sits on the hold point.")]
-    [SerializeField]
-    bool centerOnHold;
+    // [SerializeField]
+    private readonly bool centerOnHold;
 
     [Tooltip("Extra offset from the hold point, in view space (m).")]
     [SerializeField]
