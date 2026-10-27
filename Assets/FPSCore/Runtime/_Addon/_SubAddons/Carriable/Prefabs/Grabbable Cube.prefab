@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2849605848729116025}
   - component: {fileID: 8216715110582107569}
   - component: {fileID: 1408796610173648400}
+  - component: {fileID: 5342333639064107224}
   m_Layer: 6
   m_Name: Grabbable Cube
   m_TagString: Untagged
@@ -31,7 +32,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9206464195987649573}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 3.5, y: 0.5, z: 4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -199,3 +200,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45c48e74c5645f42801da6903aca3d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FPSCore::CarriableTicker
+--- !u!114 &5342333639064107224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9206464195987649573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d9b75a73b1c9a244a7540b963f14b29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::HotbarItem
+  definition: {fileID: 11400000, guid: 08d12b44f1e580c43a9d01ec14c39cfc, type: 2}
