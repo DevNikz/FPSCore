@@ -120,8 +120,8 @@ GameObject:
   - component: {fileID: 4813967036445161257}
   - component: {fileID: 5769876448624140953}
   - component: {fileID: 4488323731278178166}
-  - component: {fileID: 170500444679708984}
-  - component: {fileID: 3801381099408643841}
+  - component: {fileID: 5931692817818901113}
+  - component: {fileID: 4357467972739299767}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -322,7 +322,7 @@ MonoBehaviour:
   inheritVelocity: 1
   swingSmoothing: 0.04
   drawGizmos: 1
---- !u!114 &170500444679708984
+--- !u!114 &5931692817818901113
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FPSCore::Hotbar
   size: 5
---- !u!114 &3801381099408643841
+--- !u!114 &4357467972739299767
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

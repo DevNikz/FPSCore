@@ -58,3 +58,11 @@
   * Carrier Ticker (Optimization)
     * Optimization helper script that makes carrier objects have a fixed tick rate, and rate-limits it.
     * To add this sub-addon: Go to `Carrier (Component)` -> Scroll down, there should be an `Addons` Foldout that lists the `Carrier Ticker` component.
+
+## Hotbar (Addon)
+
+### About
+
+* Hotbar is an addon for FPS Core, which adds hotbar inventory for the player.
+* To add this addon: Go to your `Player (Prefab)` -> `First Person Controller (Component)` -> `Add Hotbar` button
+* To Change the number of Hotbor Slots: Go to `Hotbar (Component)` -> Change the `Size` variable to your liking. Max Slots a player can have is 9.
