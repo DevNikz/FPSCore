@@ -134,6 +134,7 @@ public class Carrier : MonoBehaviour, IHandsFull
     private bool drawGizmos = true;
 
     private Interactor _interactor;
+    private ICarrierStorage _storage;
     private Carriable _held;
     private bool _charging;
     private float _holdTimer,
@@ -405,10 +406,12 @@ public class Carrier : MonoBehaviour, IHandsFull
     /// <summary>Called by Carriable. False if rejected.</summary>
     public bool TryGrab(Carriable p)
     {
-        if (p == null || _held != null || !isActiveAndEnabled)
+        if (p == null || p == _held || !isActiveAndEnabled)
             return false;
         if (p.Body == null || p.Body.mass > maxMass)
             return false;
+        if (_held != null) // hands full: a storage (e.g. a hotbar) may take it
+            return _storage != null && _storage.TryStore(this, p);
         if (!p.Attach(this))
             return false;
         _held = p;
@@ -418,6 +421,20 @@ public class Carrier : MonoBehaviour, IHandsFull
         ResetSwing();
         Grabbed?.Invoke(p);
         return true;
+    }
+
+    /// <summary>Optional storage for pickups while the hands are full (e.g. a hotbar). One at a time.</summary>
+    public void RegisterStorage(ICarrierStorage storage)
+    {
+        if (_storage != null && _storage != storage)
+            Debug.LogWarning($"{name}: carrier storage replaced.", this);
+        _storage = storage;
+    }
+
+    public void UnregisterStorage(ICarrierStorage storage)
+    {
+        if (_storage == storage)
+            _storage = null;
     }
 
     /// <summary>Called by Carriable when it lets go.</summary>

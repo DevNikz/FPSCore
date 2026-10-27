@@ -17,7 +17,7 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class CarriableEdtitor : Editor
 {
-    private const string AddonFolder = "Assets/FPSCore/Runtime/_Addon/_SubAddons/Carriable/_Object";
+    private const string AddonFolder = "Assets/FPSCore/Runtime/_Addon/_SubAddons"; //"Assets/FPSCore/Runtime/_Addon/_SubAddons/Carriable/_Object";
     private const string FoldoutKey = "FPSCore.CarriableEditor.AddonsFoldout";
 
     private static readonly HashSet<Type> _warned = new HashSet<Type>();
