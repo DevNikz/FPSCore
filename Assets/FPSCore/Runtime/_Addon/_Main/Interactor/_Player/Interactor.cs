@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -47,10 +48,16 @@ public class Interactor : MonoBehaviour
         get => _target;
         private set
         {
-            _target = value;
             _targetDebug = value;
+            if (_target == value)
+                return;
+            _target = value;
+            TargetChanged?.Invoke(value);
         }
     }
+
+    /// <summary>Raised when Target changes (including to null). Listeners (e.g. outlines) hook in here.</summary>
+    public event Action<Interactable> TargetChanged;
 
     /// <summary>True while an addon (Carrier) reports full hands.</summary>
     public bool IsHolding => _handsFull != null && _handsFull.AreHandsFull;

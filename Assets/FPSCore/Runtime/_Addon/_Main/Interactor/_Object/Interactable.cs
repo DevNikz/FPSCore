@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Interactable : MonoBehaviour
+public class Interactable : MonoBehaviour, IPromptSource
 {
     [SerializeField]
     private bool interactable = true;

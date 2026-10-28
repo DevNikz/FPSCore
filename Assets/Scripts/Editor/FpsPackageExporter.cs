@@ -13,14 +13,15 @@ using UnityEngine;
 /// </summary>
 public static class FpsPackageExporter
 {
-    const string PackageFolder = "Assets/FPSCore";
+    internal const string PackageFolder = "Assets/FPSCore";
     const string AddonFolder = "Assets/FPSCore/Runtime/_Addon";
     const string DefaultFileName = "FPSCore.unitypackage";
+    const string Version = "1.1.7";
 
     [MenuItem("Tools/FPS Core/Export .unitypackage")]
     static void ExportFromMenu()
     {
-        ExportWithSavePanel("Export FPS Core", DefaultFileName, TryExport);
+        ExportWithSavePanel("Export FPS Core", $"FPSCore_Base_v{Version}.unitypackage", TryExport);
     }
 
     [MenuItem("Tools/FPS Core/Export Addon...")]
@@ -39,7 +40,7 @@ public static class FpsPackageExporter
         );
     }
 
-    static void ExportWithSavePanel(
+    internal static void ExportWithSavePanel(
         string title,
         string defaultFileName,
         Func<string, bool> tryExport
@@ -86,7 +87,7 @@ public static class FpsPackageExporter
         return TryExportAssets(GetAddonAssetPaths(addonName, dependencyNames), filePath);
     }
 
-    static bool TryExportAssets(string[] assetPaths, string filePath)
+    internal static bool TryExportAssets(string[] assetPaths, string filePath)
     {
         if (EditorUtility.scriptCompilationFailed)
         {
@@ -126,7 +127,7 @@ public static class FpsPackageExporter
 
     static string GetAddonFileName(string addonName)
     {
-        return $"FPSCore_{addonName.Replace('/', '_').TrimStart('_')}.unitypackage";
+        return $"FPSCore_{addonName.Replace('/', '_').TrimStart('_')}_v{Version}.unitypackage";
     }
 
     static string[] GetBaseAssetPaths()
@@ -164,7 +165,7 @@ public static class FpsPackageExporter
         return $"{AddonFolder}/{addonName}";
     }
 
-    static IEnumerable<string> GetPathsInFolder(string folder)
+    internal static IEnumerable<string> GetPathsInFolder(string folder)
     {
         return AssetDatabase.GetAllAssetPaths().Where(path => IsPathInFolder(path, folder));
     }

@@ -61,7 +61,7 @@ static class HotbarPairSync
     // True if it added or removed a component.
     static bool Sync(int id)
     {
-        var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+        var go = EditorUtility.EntityIdToObject(id) as GameObject;
         if (go == null)
         {
             _hadPair.Remove(id);

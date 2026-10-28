@@ -1,5 +1,12 @@
 # Changelog
 
+### Version 1.1.7
+
+* **NEW:** Prompt (Addon). Adds Key Context Prompts to Player UI.
+* **NEW:** Outline (Addon). Adds Outline Rendering to Interactable objects.
+* **FIXES:** Keybind Menu should be properly stretched across the screen
+* **FIXES:** Keybind Menu now have layout properties and row spacing.
+
 ### Version 1.1.6
 
 * **NEW:** Hotbar (Addon). Adds Hotbar Inventory to your Player.

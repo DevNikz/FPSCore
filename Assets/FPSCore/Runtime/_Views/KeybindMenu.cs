@@ -42,11 +42,20 @@ public class KeybindMenu : MonoBehaviour
     private string title = "Controls";
 
     [SerializeField]
-    private Vector2 panelSize = new(640f, 560f);
+    private Vector2 panelSize = new(850f, 850f);
 
     [Tooltip("Empty = TextMeshPro default font (needs TMP Essential Resources imported).")]
     [SerializeField]
     private TMP_FontAsset font;
+
+    [Header("Row Layout (Code mode rows)")]
+    [Tooltip("Space around the content of each built-in row (left, right, top, bottom).")]
+    [SerializeField]
+    private RectOffset rowPadding;
+
+    [Tooltip("Space between the label and the buttons inside each built-in row.")]
+    [SerializeField]
+    private float rowSpacing = 15f;
 
     [Header("Scene UI (Scene mode)")]
     [Tooltip("Whole menu. Shown on Open, hidden on Close.")]
@@ -78,6 +87,12 @@ public class KeybindMenu : MonoBehaviour
     [SerializeField]
     private TMP_Text statusText;
 
+    [Tooltip(
+        "On = turns off Raycast Target on every graphic under Panel Root that isn't a button, scroll area or the listening overlay."
+    )]
+    [SerializeField]
+    private bool disableSceneRaycasts = false;
+
     private static readonly Color PANEL_COLOR = new(0.08f, 0.08f, 0.1f, 0.94f);
     private static readonly Color BUTTON_COLOR = new(0.22f, 0.24f, 0.3f, 1f);
     private static readonly Color OVERLAY_COLOR = new(0f, 0f, 0f, 0.75f);
@@ -86,7 +101,7 @@ public class KeybindMenu : MonoBehaviour
     private InputRemapper _remapper;
     private InputAction _toggle;
     private readonly List<KeybindRow> _rows = new();
-    private GameObject _root; // canvas (Code) or panelRoot (Scene)
+    private GameObject _root; // canvas (new) or Panel (child canvas) in Code, panelRoot in Scene
     private RectTransform _list; // where rows go
     private bool _isOpen;
 
@@ -286,7 +301,13 @@ public class KeybindMenu : MonoBehaviour
         );
         rt.GetComponent<LayoutElement>().preferredHeight = 44f;
         var layout = rt.GetComponent<HorizontalLayoutGroup>();
-        layout.spacing = 10f;
+        layout.padding = new RectOffset(
+            rowPadding.left,
+            rowPadding.right,
+            rowPadding.top,
+            rowPadding.bottom
+        );
+        layout.spacing = rowSpacing;
         layout.childControlWidth = layout.childControlHeight = true;
         layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = true;
@@ -320,7 +341,39 @@ public class KeybindMenu : MonoBehaviour
             closeButton.onClick.AddListener(Close);
         if (listeningOverlay != null)
             listeningOverlay.SetActive(false);
+        if (disableSceneRaycasts)
+            DisableNonInteractiveRaycasts(panelRoot.transform);
         return true;
+    }
+
+    // Uses a Canvas found under this object, or makes one. A found canvas keeps its own settings;
+    // missing scaler / raycaster are added with the code defaults.
+    private Canvas FindOrCreateCanvas(out bool isCreated)
+    {
+        var canvas = GetComponentInChildren<Canvas>(true);
+        isCreated = canvas == null;
+        if (isCreated)
+        {
+            var created = new GameObject("KeybindMenu Canvas", typeof(Canvas));
+            created.transform.SetParent(transform, false);
+            canvas = created.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 100;
+        }
+        else if (!canvas.gameObject.activeSelf)
+            canvas.gameObject.SetActive(true); // Panel is what Open / Close toggles
+
+        var canvasGo = canvas.gameObject;
+        if (canvasGo.GetComponent<CanvasScaler>() == null)
+        {
+            var scaler = canvasGo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 0.5f;
+        }
+        if (canvasGo.GetComponent<GraphicRaycaster>() == null)
+            canvasGo.AddComponent<GraphicRaycaster>();
+        return canvas;
     }
 
     // Code mode: canvas > panel (title, scroll list, status, buttons) + listening overlay on top.
@@ -328,25 +381,15 @@ public class KeybindMenu : MonoBehaviour
     {
         EnsureEventSystem();
 
-        var canvasGo = new GameObject(
-            "KeybindMenu Canvas",
-            typeof(Canvas),
-            typeof(CanvasScaler),
-            typeof(GraphicRaycaster)
-        );
-        canvasGo.transform.SetParent(transform, false);
-        var canvas = canvasGo.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 100;
-        var scaler = canvasGo.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        var canvas = FindOrCreateCanvas(out bool isCanvasCreated);
+        var canvasGo = canvas.gameObject;
 
         var panel = NewUi("Panel", canvasGo.transform, typeof(Image), typeof(VerticalLayoutGroup));
         panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(0.5f, 0.5f);
         panel.sizeDelta = panelSize;
-        panel.GetComponent<Image>().color = PANEL_COLOR;
+        var panelImage = panel.GetComponent<Image>();
+        panelImage.color = PANEL_COLOR;
+        panelImage.raycastTarget = false; // background only
         var panelLayout = panel.GetComponent<VerticalLayoutGroup>();
         panelLayout.padding = new RectOffset(24, 24, 20, 20);
         panelLayout.spacing = 10f;
@@ -401,8 +444,38 @@ public class KeybindMenu : MonoBehaviour
         listeningOverlay = overlay.gameObject;
         listeningOverlay.SetActive(false);
 
-        _root = canvasGo;
+        // A new canvas is ours to hide; a found canvas may hold other UI, so only hide the Panel.
+        _root = isCanvasCreated ? canvasGo : panel.gameObject;
         return true;
+    }
+
+    // Turns off Raycast Target on graphics that only draw (panels, backgrounds, icons).
+    private void DisableNonInteractiveRaycasts(Transform root)
+    {
+        foreach (var graphic in root.GetComponentsInChildren<Graphic>(true))
+        {
+            if (graphic.raycastTarget && !IsRaycastNeeded(graphic))
+                graphic.raycastTarget = false;
+        }
+    }
+
+    private bool IsRaycastNeeded(Graphic graphic)
+    {
+        if (listeningOverlay != null && graphic.gameObject == listeningOverlay)
+            return true;
+        if (graphic.GetComponent<Selectable>() != null)
+            return true;
+
+        var selectable = graphic.GetComponentInParent<Selectable>(true);
+        if (selectable != null && selectable.targetGraphic == graphic)
+            return true;
+
+        var scroll = graphic.GetComponentInParent<ScrollRect>(true);
+        return scroll != null
+            && (
+                scroll.viewport == graphic.rectTransform
+                || scroll.GetComponent<Graphic>() == graphic
+            );
     }
 
     // Menu clicks need an EventSystem with the Input System UI module.

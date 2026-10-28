@@ -66,3 +66,26 @@
 * Hotbar is an addon for FPS Core, which adds hotbar inventory for the player.
 * To add this addon: Go to your `Player (Prefab)` -> `First Person Controller (Component)` -> `Add Hotbar` button
 * To Change the number of Hotbor Slots: Go to `Hotbar (Component)` -> Change the `Size` variable to your liking. Max Slots a player can have is 9.
+
+## Prompt (Addon)
+
+### About
+
+* Prompt is an addon for FPS Core, which adds Key Context Prompts to the Player UI.
+* To add this addon: Go to your `Player (Prefab)` -> `First Person Controller (Component)` -> `Add Prompt UI (Sub-Addon)` button
+* To Change the Prompt UI propertie: Go to `Prompt UI (Component)` in the `Player (Prefab)`.
+* You can set prompts for  `Interactable` objects by:
+  * Setting the `Prompt Text (Default)`,
+  * Or Adding entries inside the `Prompts (List)` depending on the current player state.
+    * In each entry, what `Key Action` the prompt will use and the description of what it will do.
+
+## Outline (Addon)
+
+### About
+
+* Outline is an addon for FPS Core, which adds outline rendering for interactable objects.
+* To add this addon: Go to your `Player (Prefab)` -> `First Person Controller (Component)` -> `Add Outline Renderer (Sub-Addon)` button
+* To Change the outline renderer's properties: 
+  * Navigate to your currently used project's renderer asset. This could be in ../Settings/PC_Renderer.asset
+  * Collapse `Pickup Outline` tab
+  * You can edit the color, intensity, thickness, etc. in this foldout.

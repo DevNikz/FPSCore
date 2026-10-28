@@ -122,6 +122,9 @@ GameObject:
   - component: {fileID: 4488323731278178166}
   - component: {fileID: 5931692817818901113}
   - component: {fileID: 4357467972739299767}
+  - component: {fileID: 5039263384274519440}
+  - component: {fileID: 9090636476477449076}
+  - component: {fileID: 1224218066066189260}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -361,6 +364,54 @@ MonoBehaviour:
   font: {fileID: 0}
   slotContainer: {fileID: 0}
   slotPrefab: {fileID: 0}
+--- !u!114 &5039263384274519440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3476640955920598647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37f6e16db09802d4f85f452704bf5a83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::PromptPublisher
+--- !u!114 &9090636476477449076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3476640955920598647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fba5e65f839ec14cbb1b44764ba1880, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::PromptUI
+  buildMode: 0
+  keyLabel: E
+  offsetBelowCenter: 65
+  fontSize: 28
+  spacing: 4
+  padding: 12
+  backColor: {r: 0, g: 0, b: 0, a: 0.35}
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  font: {fileID: 0}
+  lineContainer: {fileID: 0}
+  linePrefab: {fileID: 0}
+  panel: {fileID: 0}
+--- !u!114 &1224218066066189260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3476640955920598647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbec3717e659f0147a9c1c01d4b42761, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::PickupOutlineTargeting
 --- !u!1 &3625307121856486961
 GameObject:
   m_ObjectHideFlags: 0
