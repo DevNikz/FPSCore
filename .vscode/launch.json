@@ -1,11 +1,11 @@
 {
     "version": "0.2.0",
     "configurations": [
-		{
-            "name": "Unity Debugger",
-            "type": "unity",
-            "request": "attach"
-        },
+		// {
+        //     "name": "Unity Debugger",
+        //     "type": "unity",
+        //     "request": "attach"
+        // },
         {
             "name": "Attach to Unity",
             "type": "vstuc",

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3075020530750394467}
   - component: {fileID: 3288318379253835447}
   - component: {fileID: 604721562698552425}
+  - component: {fileID: 2192053748133289324}
   m_Layer: 6
   m_Name: Interactable Cube
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1930961012614776173}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 3.4999998, y: 0.5, z: 2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -158,3 +159,15 @@ MonoBehaviour:
   promptText: Interact Me
   prompts: []
   IsDebugEnabled: 0
+--- !u!114 &2192053748133289324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930961012614776173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca2481a6da88d94cb92b1c91aaba46d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::Draggable

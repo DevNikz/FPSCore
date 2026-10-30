@@ -409,8 +409,7 @@ public class Carriable : MonoBehaviour
         Vector3 pos = hold + holdOffset - rot * Vector3.Scale(_centerLocal, transform.lossyScale);
         if (_clearance.IsReady)
             pos.z += _clearance.NearDeficitLocal(pos, rot, cameraClearance);
-        transform.localPosition = pos;
-        transform.localRotation = rot;
+        transform.SetLocalPositionAndRotation(pos, rot);
     }
 
     // Carried or claimed items are driven by the ticker; idle ones have no callbacks.

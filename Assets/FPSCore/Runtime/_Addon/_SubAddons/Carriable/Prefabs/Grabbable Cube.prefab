@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 8216715110582107569}
   - component: {fileID: 1408796610173648400}
   - component: {fileID: 5342333639064107224}
+  - component: {fileID: 6568727873345619799}
+  - component: {fileID: 8135337489298924185}
   m_Layer: 6
   m_Name: Grabbable Cube
   m_TagString: Untagged
@@ -213,3 +215,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FPSCore::HotbarItem
   definition: {fileID: 11400000, guid: 08d12b44f1e580c43a9d01ec14c39cfc, type: 2}
+--- !u!114 &6568727873345619799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9206464195987649573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca2481a6da88d94cb92b1c91aaba46d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::Draggable
+--- !u!114 &8135337489298924185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9206464195987649573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0484fc5cf4fc1e142aa7b12fb8cd8773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FPSCore::CarriableDragTarget

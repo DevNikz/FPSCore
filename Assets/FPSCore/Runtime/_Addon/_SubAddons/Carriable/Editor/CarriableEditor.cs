@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Interactor Editor Inspector
+/// Carriable Editor Inspector
 /// - Draws the default inspector, then an "Add-ons" foldout.
 /// - Lists one "Add X" button per [FPSAddon] component found in Assets/FPSCore/Runtime/Addon/
 ///   that is not yet on the object.

@@ -17,7 +17,7 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class InteractableEditor : Editor
 {
-    private const string AddonFolder = "Assets/FPSCore/Runtime/_Addon/_SubAddons";
+    private const string AddonFolder = "Assets/FPSCore/Runtime/_Addon"; //"Assets/FPSCore/Runtime/_Addon/_SubAddons"
     private const string FoldoutKey = "FPSCore.InteractableEditor.AddonsFoldout";
 
     private static readonly HashSet<Type> _warned = new HashSet<Type>();

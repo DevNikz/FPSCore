@@ -6,12 +6,12 @@ using System;
 /// - Interactor lists it as an "Add X" button until the component exists.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-public sealed class InteractableAddonAttribute : Attribute
+public sealed class InteractorAddonAttribute : Attribute
 {
     /// <summary>Button label. Empty/null falls back to the nicified class name.</summary>
     public string DisplayName { get; }
 
-    public InteractableAddonAttribute(string displayName = null)
+    public InteractorAddonAttribute(string displayName = null)
     {
         DisplayName = displayName;
     }

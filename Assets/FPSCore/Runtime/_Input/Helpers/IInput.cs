@@ -7,12 +7,14 @@ using UnityEngine.InputSystem;
 /// </summary>
 public static class IInput
 {
+    private static InputManager _owner; // the manager the actions below came from
+
     /// <summary>Hotbar keys 1..9.</summary>
     public const int HOTBAR_KEYS = 9;
 
-    private const string HOTBAR_PREFIX = "Hotbar";
+    private const string HOTBAR_PREFIX = "Hotbar",
+        GRAB_PREFIX = "Grab";
 
-    private static InputManager _owner; // the manager the actions below came from
     private static InputAction _grab;
 
     //Add more here
@@ -49,7 +51,7 @@ public static class IInput
             return true;
 
         // Left click is shared by Grab, Scan and BoxStore: only one of them is active per held item.
-        _grab = im.GetExtraAction("Grab", "<Mouse>/leftButton", "<Gamepad>/rightTrigger");
+        _grab = im.GetExtraAction(GRAB_PREFIX, "<Mouse>/leftButton", "<Gamepad>/rightTrigger");
         // Add your custom Resolve Action Mappings here
         // ...
 
