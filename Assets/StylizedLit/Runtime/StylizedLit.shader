@@ -1,4 +1,4 @@
-// Stylized/Master Lit  (Phase 1: Lit parity core, Forward+ only)
+// Stylized/Master Lit  (Phase 4: Lit parity + toon + rim + matcap + outline, Forward+ only)
 // Mirrors Unity 6.3 (6000.3, URP 17.3) Lit / ComplexLit: property names, keywords and pass layout.
 // Cluster (Forward+) light loop keyword is _CLUSTER_LIGHT_LOOP (replaced _FORWARD_PLUS from Unity 6.1).
 // Forward-only: no GBuffer pass. Deferred renders this via the UniversalForwardOnly pass.
@@ -50,6 +50,42 @@ Shader "Stylized/Master Lit"
         _ClearCoatMap("Clear Coat Map", 2D) = "white" {}
         _ClearCoatMask("Clear Coat Mask", Range(0.0, 1.0)) = 0.0
         _ClearCoatSmoothness("Clear Coat Smoothness", Range(0.0, 1.0)) = 1.0
+
+        // Toon lighting (Phase 3). _ToonEnabled drives the _TOON_ON keyword from the GUI.
+        [ToggleUI] _ToonEnabled("Enable Toon Lighting", Float) = 0.0
+        _ToonStrength("Toon Strength", Range(0.0, 1.0)) = 1.0
+        [NoScaleOffset] _ToonRampMap("Toon Ramp", 2D) = "white" {}
+        _ToonSteps("Steps", Range(2, 8)) = 3
+        _ToonStepSmoothness("Step Smoothness", Range(0.0, 1.0)) = 0.05
+        _ToonThreshold("Shadow Threshold", Range(-1.0, 1.0)) = 0.0
+        [ToggleUI] _ToonHalfLambert("Half Lambert", Float) = 0.0
+        _ToonShadowColor("Shadow Tint", Color) = (0.35, 0.35, 0.45, 1)
+        [ToggleUI] _ToonAdditionalLights("Apply To Additional Lights", Float) = 1.0
+        [HDR] _ToonSpecularColor("Specular Color", Color) = (1, 1, 1, 1)
+        _ToonSpecularStrength("Specular Strength", Range(0.0, 1.0)) = 0.5
+        _ToonSpecularSize("Specular Size", Range(0.0, 1.0)) = 0.12
+        _ToonSpecularSmoothness("Specular Smoothness", Range(0.0, 1.0)) = 0.02
+
+        // Rim light (Phase 4). _RimEnabled drives _RIM_ON.
+        [ToggleUI] _RimEnabled("Enable Rim Light", Float) = 0.0
+        [HDR] _RimColor("Rim Color", Color) = (1, 1, 1, 1)
+        _RimThreshold("Rim Threshold", Range(0.0, 1.0)) = 0.6
+        _RimSoftness("Rim Softness", Range(0.0, 1.0)) = 0.1
+        _RimLightMask("Light Direction Mask", Range(0.0, 1.0)) = 0.0
+        [ToggleUI] _RimShadowAware("Hide In Main Light Shadow", Float) = 0.0
+
+        // Matcap (Phase 4). _MatcapEnabled drives _MATCAP_ON.
+        [ToggleUI] _MatcapEnabled("Enable Matcap", Float) = 0.0
+        [NoScaleOffset] _MatcapMap("Matcap", 2D) = "white" {}
+        _MatcapTint("Matcap Tint", Color) = (1, 1, 1, 1)
+        _MatcapStrength("Matcap Strength", Range(0.0, 1.0)) = 1.0
+        [Enum(Additive, 0, Multiply, 1, Replace, 2)] _MatcapBlend("Blend Mode", Float) = 0.0
+
+        // Outline (Phase 4). _OutlineEnabled turns the "SRPDefaultUnlit" pass on and off from the GUI.
+        [ToggleUI] _OutlineEnabled("Enable Outline", Float) = 0.0
+        _OutlineColor("Outline Color", Color) = (0, 0, 0, 1)
+        _OutlineWidth("Outline Width", Range(0.0, 10.0)) = 2.0
+        _OutlineDistanceScaling("Screen Space Width", Range(0.0, 1.0)) = 0.0
 
         // Blending state
         _Surface("__surface", Float) = 0.0
@@ -128,6 +164,10 @@ Shader "Stylized/Master Lit"
             #pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
             #pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
             #pragma shader_feature_local_fragment _SPECULAR_SETUP
+            #pragma shader_feature_local_fragment _TOON_ON
+            #pragma shader_feature_local_fragment _TOON_RAMPMAP
+            #pragma shader_feature_local_fragment _RIM_ON
+            #pragma shader_feature_local_fragment _MATCAP_ON
 
             // -------------------------------------
             // Universal Pipeline keywords
@@ -171,6 +211,33 @@ Shader "Stylized/Master Lit"
 
             #include "Assets/StylizedLit/Runtime/HLSL/StylizedLitInput.hlsl"
             #include "Assets/StylizedLit/Runtime/HLSL/StylizedLitForwardPass.hlsl"
+            ENDHLSL
+        }
+
+        // Inverted-hull outline. Drawn by the renderer's unlit pass list (SRPDefaultUnlit) in addition to ForwardLit.
+        Pass
+        {
+            Name "Outline"
+            Tags { "LightMode" = "SRPDefaultUnlit" }
+
+            Cull Front
+            ZWrite On
+
+            HLSLPROGRAM
+            #pragma target 2.0
+
+            #pragma vertex StylizedOutlineVertex
+            #pragma fragment StylizedOutlineFragment
+
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+
+            #pragma multi_compile_instancing
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Fog.hlsl"
+
+            #include "Assets/StylizedLit/Runtime/HLSL/StylizedLitInput.hlsl"
+            #include "Assets/StylizedLit/Runtime/HLSL/StylizedLitOutlinePass.hlsl"
             ENDHLSL
         }
 

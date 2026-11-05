@@ -7,13 +7,22 @@ namespace GridMaster.EditorTools
     {
         private const string LogPrefix = "[GridMaster] ";
         private const string ProjectionObjectKeyword = "_PROJECTION_OBJECT";
+        private const string PatternCheckerKeyword = "_PATTERN_CHECKER";
+        private const string PatternDotsKeyword = "_PATTERN_DOTS";
+        private const string LabelsKeyword = "_LABELS";
         private const string TintAxisKeyword = "_TINT_AXIS";
         private const string TintFaceKeyword = "_TINT_FACE";
         private static readonly int ProjectionId = Shader.PropertyToID("_Projection");
+        private static readonly int PatternModeId = Shader.PropertyToID("_PatternMode");
         private static readonly int TintModeId = Shader.PropertyToID("_TintMode");
+        private static readonly int GlobalScaleId = Shader.PropertyToID(GridMasterGlobals.GlobalScaleName);
+        private static readonly int LabelsEnabledId = Shader.PropertyToID("_LabelsEnabled");
+        private static readonly int LabelAtlasId = Shader.PropertyToID("_LabelAtlas");
 
         private static bool isSurfaceOpen = true;
         private static bool isProjectionOpen = true;
+        private static bool isPatternOpen = true;
+        private static bool isLabelsOpen = true;
         private static bool isTintOpen = true;
         private static bool isLinesOpen = true;
         private static bool isFadeOpen = true;
@@ -45,7 +54,51 @@ namespace GridMaster.EditorTools
                 }
                 else
                 {
-                    DrawProperties(materialEditor, properties, "_CellSize", "_TriplanarSharpness");
+                    DrawProperties(materialEditor, properties, "_CellSize", "_GlobalScaleMode", "_TriplanarSharpness");
+                    if (GetFloat(materialEditor, "_GlobalScaleMode") > 0.5f && Shader.GetGlobalFloat(GlobalScaleId) <= 0f)
+                    {
+                        EditorGUILayout.HelpBox("No active Grid Master Globals in the scene, so this material uses its own Cell Size.", MessageType.Info);
+                    }
+                }
+            }
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            int patternMode = Mathf.RoundToInt(GetFloat(materialEditor, "_PatternMode"));
+            bool isDotsMode = patternMode == 2;
+
+            isPatternOpen = EditorGUILayout.BeginFoldoutHeaderGroup(isPatternOpen, "Pattern");
+            if (isPatternOpen)
+            {
+                DrawProperties(materialEditor, properties, "_PatternMode");
+                if (patternMode == 1)
+                {
+                    DrawProperties(materialEditor, properties, "_CheckerColor", "_CheckerLines");
+                }
+                else if (isDotsMode)
+                {
+                    DrawProperties(materialEditor, properties, "_MinorDotSize", "_MajorDotSize");
+                }
+            }
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            isLabelsOpen = EditorGUILayout.BeginFoldoutHeaderGroup(isLabelsOpen, "Labels");
+            if (isLabelsOpen)
+            {
+                DrawProperties(materialEditor, properties, "_LabelsEnabled");
+                if (IsPropertyOn(materialEditor, "_LabelsEnabled"))
+                {
+                    MaterialProperty atlasProperty = FindProperty("_LabelAtlas", properties, false);
+                    if (atlasProperty != null)
+                    {
+                        materialEditor.TexturePropertySingleLine(new GUIContent(atlasProperty.displayName), atlasProperty);
+                        if (atlasProperty.textureValue == null)
+                        {
+                            EditorGUILayout.HelpBox("No label atlas assigned, so no text will draw. Use GridMasterLabelAtlas.png from GridMaster/Textures.", MessageType.Warning);
+                        }
+                    }
+                    DrawProperties(materialEditor, properties, "_LabelColor", "_LabelSize", "_LabelOffset",
+                        "_LabelUnit", "_LabelSoftness", "_LabelMinPixelHeight");
+                    EditorGUILayout.HelpBox("Each major cell shows the world coordinate of its left major line. In Object UV mode it counts cells x Cell Size.", MessageType.None);
                 }
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -73,11 +126,16 @@ namespace GridMaster.EditorTools
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
-            isLinesOpen = EditorGUILayout.BeginFoldoutHeaderGroup(isLinesOpen, "Grid Lines");
+            isLinesOpen = EditorGUILayout.BeginFoldoutHeaderGroup(isLinesOpen, "Grid Lines / Dots");
             if (isLinesOpen)
             {
-                DrawProperties(materialEditor, properties, "_LineColor", "_MajorLineColor",
-                    "_MinorLineWidth", "_MajorLineWidth", "_MajorInterval", "_LineSoftness");
+                DrawLabeledProperty(materialEditor, properties, "_LineColor", isDotsMode ? "Minor Dot Color" : "Minor Line Color");
+                DrawLabeledProperty(materialEditor, properties, "_MajorLineColor", isDotsMode ? "Major Dot Color" : "Major Line Color");
+                if (!isDotsMode)
+                {
+                    DrawProperties(materialEditor, properties, "_MinorLineWidth", "_MajorLineWidth");
+                }
+                DrawProperties(materialEditor, properties, "_MajorInterval", "_LineSoftness");
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
@@ -95,7 +153,9 @@ namespace GridMaster.EditorTools
             {
                 foreach (Object target in materialEditor.targets)
                 {
-                    ApplyGridKeywords(target as Material);
+                    Material material = target as Material;
+                    ApplyGridKeywords(material);
+                    TryAssignDefaultAtlas(material);
                 }
             }
 
@@ -108,6 +168,7 @@ namespace GridMaster.EditorTools
         {
             base.AssignNewShaderToMaterial(material, oldShader, newShader);
             ApplyGridKeywords(material);
+            TryAssignDefaultAtlas(material);
         }
 
         // Syncs keywords with property values. Public so the apply tool and presets can reuse it.
@@ -120,10 +181,35 @@ namespace GridMaster.EditorTools
 
             bool isObjectUv = material.HasProperty(ProjectionId) && material.GetFloat(ProjectionId) > 0.5f;
             int tintMode = material.HasProperty(TintModeId) ? Mathf.RoundToInt(material.GetFloat(TintModeId)) : 0;
+            int patternMode = material.HasProperty(PatternModeId) ? Mathf.RoundToInt(material.GetFloat(PatternModeId)) : 0;
 
             SetKeyword(material, ProjectionObjectKeyword, isObjectUv);
+            SetKeyword(material, LabelsKeyword, material.HasProperty(LabelsEnabledId) && material.GetFloat(LabelsEnabledId) > 0.5f);
+            SetKeyword(material, PatternCheckerKeyword, patternMode == 1);
+            SetKeyword(material, PatternDotsKeyword, patternMode == 2);
             SetKeyword(material, TintAxisKeyword, tintMode == 1);
             SetKeyword(material, TintFaceKeyword, tintMode == 2);
+        }
+
+        // Assigns GridMasterLabelAtlas.png to materials that have none. Public so presets/tools can reuse it.
+        public static void TryAssignDefaultAtlas(Material material)
+        {
+            if (material == null || !material.HasProperty(LabelAtlasId) || material.GetTexture(LabelAtlasId) != null)
+            {
+                return;
+            }
+
+            string[] guids = AssetDatabase.FindAssets(GridMasterAtlasImporter.AtlasName + " t:Texture2D");
+            if (guids.Length == 0)
+            {
+                return;
+            }
+
+            Texture2D atlas = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            if (atlas != null)
+            {
+                material.SetTexture(LabelAtlasId, atlas);
+            }
         }
 
         private static void SetKeyword(Material material, string keyword, bool isEnabled)

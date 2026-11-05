@@ -10,8 +10,26 @@ Shader "GridMaster/Lit"
         [Header(Projection)]
         [Enum(WorldTriplanar, 0, ObjectUV, 1)] _Projection ("Projection", Float) = 0
         _CellSize ("Cell Size (world units)", Float) = 1
+        [Enum(Ignore, 0, Multiply, 1, Override, 2)] _GlobalScaleMode ("Global Scale Mode", Float) = 1
         _ObjectUVTiling ("Object UV Tiling", Float) = 1
         _TriplanarSharpness ("Triplanar Sharpness", Range(1, 16)) = 4
+
+        [Header(Pattern)]
+        [Enum(Lines, 0, Checker, 1, Dots, 2)] _PatternMode ("Pattern Mode", Float) = 0
+        _CheckerColor ("Checker Alt Color", Color) = (0.42, 0.42, 0.42, 1)
+        [Toggle] _CheckerLines ("Draw Lines Over Checker", Float) = 1
+        _MinorDotSize ("Minor Dot Size (fraction of cell)", Range(0.01, 0.8)) = 0.12
+        _MajorDotSize ("Major Dot Size (fraction of cell)", Range(0.01, 0.8)) = 0.25
+
+        [Header(Labels)]
+        [Toggle] _LabelsEnabled ("Enable Labels", Float) = 0
+        [NoScaleOffset] _LabelAtlas ("Label SDF Atlas", 2D) = "black" {}
+        _LabelColor ("Label Color", Color) = (0.9, 0.9, 0.9, 1)
+        _LabelSize ("Label Height (minor cells)", Range(0.1, 2)) = 0.5
+        _LabelOffset ("Label Offset (minor cells)", Vector) = (0.12, 0.12, 0, 0)
+        [Enum(None, 0, Meters, 1, Centimeters, 2, Units, 3)] _LabelUnit ("Unit Suffix", Float) = 1
+        _LabelSoftness ("Label Edge Softness", Range(0.5, 3)) = 1
+        _LabelMinPixelHeight ("Label Fade-Out Below (pixels)", Range(4, 32)) = 10
 
         [Header(Axis and Face Tint)]
         [Enum(Off, 0, PerAxis, 1, PerFace, 2)] _TintMode ("Tint Mode", Float) = 0
@@ -67,6 +85,8 @@ Shader "GridMaster/Lit"
             // Material keywords
             #pragma shader_feature_local _PROJECTION_OBJECT
             #pragma shader_feature_local _ _TINT_AXIS _TINT_FACE
+            #pragma shader_feature_local _ _PATTERN_CHECKER _PATTERN_DOTS
+            #pragma shader_feature_local _LABELS
 
             // URP keywords (Forward+ uses _CLUSTER_LIGHT_LOOP; _FORWARD_PLUS is deprecated since 6.1)
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN

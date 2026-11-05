@@ -29,7 +29,7 @@ GridUV GetGridUV(float3 positionWS, float3 normalWS, float2 meshUV)
     grid.uvZ = uv;
     grid.weights = float3(1.0, 0.0, 0.0);
 #else
-    float3 gridPosition = positionWS / max(_CellSize, 1e-4);
+    float3 gridPosition = positionWS / GetEffectiveCellSize();
     grid.uvX = gridPosition.zy;
     grid.uvY = gridPosition.xz;
     grid.uvZ = gridPosition.xy;
