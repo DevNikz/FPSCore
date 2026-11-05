@@ -27,7 +27,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: 7491601281297515449}
-  m_RendererFeatureMap: ad6b866f10d7b46cb9839952ac83f767
+  - {fileID: 2235548775312966909}
+  m_RendererFeatureMap: ad6b866f10d7b46cb9839952ac83f767fdc49646c443061f
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -56,6 +57,22 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &2235548775312966909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a80c4dc98af830489fa1d575c7925ea, type: 3}
+  m_Name: SSGICoreFeature
+  m_EditorClassIdentifier: SSGICore.Runtime::SSGICore.SSGICoreFeature
+  m_Active: 1
+  m_PassEvent: 450
+  m_ShowInSceneView: 1
+  m_UseNormalsTexture: 1
 --- !u!114 &7491601281297515449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,14 +116,14 @@ MonoBehaviour:
   m_Active: 1
   m_Settings:
     AOMethod: 0
-    Downsample: 0
-    AfterOpaque: 0
+    Downsample: 1
+    AfterOpaque: 1
     Source: 1
     NormalSamples: 1
-    Intensity: 0.4
+    Intensity: 0.5
     DirectLightingStrength: 0.25
-    Radius: 0.3
-    Samples: 1
+    Radius: 0.5
+    Samples: 0
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1

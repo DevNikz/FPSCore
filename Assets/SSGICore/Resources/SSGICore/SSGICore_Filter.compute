@@ -1,0 +1,81 @@
+#pragma kernel Atrous
+
+#include "SSGICore_Common.hlsl"
+
+Texture2D<float4>   _SSGI_FilterIn;
+RWTexture2D<float4> _SSGI_FilterOut;
+
+static const float kH[3] = { 0.375, 0.25, 0.0625 };
+
+// One iteration of an edge-stopping a-trous wavelet filter (5x5 B3-spline, stride = _SSGI_StepSize).
+// Weights: view-space plane distance, normal similarity, luminance guided by temporal variance.
+[numthreads(8, 8, 1)]
+void Atrous(uint3 id : SV_DispatchThreadID)
+{
+    int2 lp = (int2)id.xy;
+    int2 lowDim = (int2)_SSGI_LowSize.xy;
+    if (any(lp >= lowDim)) return;
+
+    float eyeC;
+    float3 posC, nC;
+    if (!LoadLowGeo(lp, eyeC, posC, nC))
+    {
+        _SSGI_FilterOut[lp] = 0;
+        return;
+    }
+
+    float4 center = _SSGI_FilterIn.Load(int3(lp, 0));
+    float lumC = SSGILuma(center.rgb);
+
+    // lightly pre-filtered centre variance (3x3 gaussian)
+    float varC = 0;
+    [unroll]
+    for (int vy = -1; vy <= 1; vy++)
+    {
+        [unroll]
+        for (int vx = -1; vx <= 1; vx++)
+        {
+            int2 q = clamp(lp + int2(vx, vy), int2(0, 0), lowDim - 1);
+            float w = (vx == 0 ? 0.5 : 0.25) * (vy == 0 ? 0.5 : 0.25);
+            varC += w * _SSGI_FilterIn.Load(int3(q, 0)).a;
+        }
+    }
+    float sigmaL = 4.0 * sqrt(max(varC, 0.0)) + 1e-3;
+
+    float3 acc = 0;
+    float varAcc = 0;
+    float wsum = 0;
+
+    for (int dy = -2; dy <= 2; dy++)
+    {
+        for (int dx = -2; dx <= 2; dx++)
+        {
+            int2 q = lp + int2(dx, dy) * _SSGI_StepSize;
+            if (any(q < 0) || any(q >= lowDim)) continue;
+
+            float h = kH[abs(dx)] * kH[abs(dy)];
+            float4 s = _SSGI_FilterIn.Load(int3(q, 0));
+            float w = h;
+
+            if (dx != 0 || dy != 0)
+            {
+                float eyeQ;
+                float3 posQ, nQ;
+                if (!LoadLowGeo(q, eyeQ, posQ, nQ)) continue;
+
+                float plane = abs(dot(nC, posQ - posC)) / max(eyeC, 1e-3);
+                float wZ = exp(-plane / 0.02);
+                float wN = pow(saturate(dot(nC, nQ)), 32.0);
+                float wL = exp(-abs(lumC - SSGILuma(s.rgb)) / sigmaL);
+                w *= wZ * wN * wL;
+            }
+
+            acc += w * s.rgb;
+            varAcc += w * w * s.a;
+            wsum += w;
+        }
+    }
+
+    float inv = rcp(max(wsum, 1e-5));
+    _SSGI_FilterOut[lp] = float4(acc * inv, varAcc * inv * inv);
+}

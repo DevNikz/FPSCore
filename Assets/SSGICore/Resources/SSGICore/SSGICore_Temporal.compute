@@ -1,0 +1,129 @@
+#pragma kernel Temporal
+
+#include "SSGICore_Common.hlsl"
+
+Texture2D<float4>   _SSGI_TraceIn;
+Texture2D<float4>   _SSGI_HistColorPrev;
+Texture2D<float4>   _SSGI_HistMomPrev;
+Texture2D<float4>   _SSGI_HistGeoPrev;
+RWTexture2D<float4> _SSGI_HistColorOut;
+RWTexture2D<float4> _SSGI_HistMomOut;
+RWTexture2D<float4> _SSGI_HistGeoOut;
+RWTexture2D<float4> _SSGI_FilterOut;
+
+[numthreads(8, 8, 1)]
+void Temporal(uint3 id : SV_DispatchThreadID)
+{
+    int2 lp = (int2)id.xy;
+    int2 lowDim = (int2)_SSGI_LowSize.xy;
+    if (any(lp >= lowDim)) return;
+
+    float eye;
+    float3 posVS, nVS;
+    if (!LoadLowGeo(lp, eye, posVS, nVS))
+    {
+        _SSGI_HistColorOut[lp] = 0;
+        _SSGI_HistMomOut[lp] = 0;
+        _SSGI_HistGeoOut[lp] = float4(0, 0, 1, 1e6);
+        _SSGI_FilterOut[lp] = 0;
+        return;
+    }
+
+    int2 fp = LowToFull(lp);
+    float3 nWS = normalize(mul(nVS, (float3x3)_SSGI_View));
+
+    float3 cur = ClampLuma(_SSGI_TraceIn.Load(int3(lp, 0)).rgb);
+
+    // 3x3 neighbourhood statistics (variance clipping + spatial variance fallback)
+    float3 s1 = 0, s2 = 0;
+    float l1 = 0, l2 = 0;
+    [unroll]
+    for (int y = -1; y <= 1; y++)
+    {
+        [unroll]
+        for (int x = -1; x <= 1; x++)
+        {
+            int2 q = clamp(lp + int2(x, y), int2(0, 0), lowDim - 1);
+            float3 s = ClampLuma(_SSGI_TraceIn.Load(int3(q, 0)).rgb);
+            float l = SSGILuma(s);
+            s1 += s; s2 += s * s;
+            l1 += l; l2 += l * l;
+        }
+    }
+    s1 /= 9.0; s2 /= 9.0; l1 /= 9.0; l2 /= 9.0;
+    float3 sigma = sqrt(max(s2 - s1 * s1, 0.0));
+    float spatialVar = max(l2 - l1 * l1, 0.0);
+
+    float lumCur = SSGILuma(cur);
+    float3 prevC = cur;
+    float2 prevM = float2(lumCur, lumCur * lumCur);
+    float newAge = 1.0;
+    float alpha = 1.0;
+
+    if (_SSGI_HistoryValid != 0)
+    {
+        float2 uvCur = (lp + 0.5) * _SSGI_LowSize.zw;
+        float2 puv = PrevUV(fp, posVS);
+        float3 worldPos = mul(_SSGI_InvView, float4(posVS, 1.0)).xyz;
+        float expectedEye = -mul(_SSGI_PrevView, float4(worldPos, 1.0)).z;
+
+        float2 pp = puv * _SSGI_LowSize.xy - 0.5;
+        int2 p0 = (int2)floor(pp);
+        float2 f = pp - p0;
+
+        float4 accC = 0;
+        float2 accM = 0;
+        float wsum = 0;
+
+        [unroll]
+        for (int i = 0; i < 4; i++)
+        {
+            int2 o = int2(i & 1, i >> 1);
+            int2 q = p0 + o;
+            if (any(q < 0) || any(q >= lowDim)) continue;
+
+            float wb = (o.x == 1 ? f.x : 1.0 - f.x) * (o.y == 1 ? f.y : 1.0 - f.y);
+            float4 g = _SSGI_HistGeoPrev.Load(int3(q, 0));
+            float dz = abs(g.w - expectedEye) / max(expectedEye, 1e-3);
+            float dn = dot(g.xyz, nWS);
+            if (dz < 0.05 && dn > 0.8)
+            {
+                accC += wb * _SSGI_HistColorPrev.Load(int3(q, 0));
+                accM += wb * _SSGI_HistMomPrev.Load(int3(q, 0)).xy;
+                wsum += wb;
+            }
+        }
+
+        if (wsum > 0.01)
+        {
+            accC /= wsum;
+            accM /= wsum;
+            prevC = accC.rgb;
+            prevM = accM;
+            newAge = min(accC.a + 1.0, (float)_SSGI_MaxAge);
+            alpha = rcp(newAge);
+
+            // reject history on pixels whose motion differs from pure camera motion (moving receivers)
+            if (_SSGI_MotionReject > 0.0 && _SSGI_HasMotion != 0)
+            {
+                float2 camUV = AnalyticPrevUV(posVS);
+                float objPx = length((puv - camUV) * _SSGI_FullSize.xy);
+                alpha = max(alpha, saturate(objPx / _SSGI_MotionReject) * 0.5);
+            }
+
+            if (_SSGI_TemporalClamp > 0.0)
+                prevC = clamp(prevC, s1 - _SSGI_TemporalClamp * sigma, s1 + _SSGI_TemporalClamp * sigma);
+        }
+    }
+
+    float3 result = lerp(prevC, cur, alpha);
+    float m1 = lerp(prevM.x, lumCur, alpha);
+    float m2 = lerp(prevM.y, lumCur * lumCur, alpha);
+    float variance = max(m2 - m1 * m1, 0.0);
+    if (newAge < 4.0) variance = max(variance, spatialVar);
+
+    _SSGI_HistColorOut[lp] = float4(result, newAge);
+    _SSGI_HistMomOut[lp] = float4(m1, m2, 0, 0);
+    _SSGI_HistGeoOut[lp] = float4(nWS, eye);
+    _SSGI_FilterOut[lp] = float4(result, variance);
+}

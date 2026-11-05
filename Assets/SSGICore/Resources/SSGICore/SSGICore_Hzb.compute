@@ -1,0 +1,41 @@
+#pragma kernel HzbFromDepth
+#pragma kernel HzbDown
+
+#include "SSGICore_Common.hlsl"
+
+Texture2D<float>   _SSGI_HzbIn;
+RWTexture2D<float> _SSGI_HzbOut;
+
+// Level 1: 2x2 min of linear eye depth read straight from the depth buffer.
+[numthreads(8, 8, 1)]
+void HzbFromDepth(uint3 id : SV_DispatchThreadID)
+{
+    uint w, h;
+    _SSGI_HzbOut.GetDimensions(w, h);
+    if (id.x >= w || id.y >= h) return;
+
+    int2 p = (int2)id.xy * 2;
+    float d = LoadHzb(0, p);
+    d = min(d, LoadHzb(0, p + int2(1, 0)));
+    d = min(d, LoadHzb(0, p + int2(0, 1)));
+    d = min(d, LoadHzb(0, p + int2(1, 1)));
+    _SSGI_HzbOut[id.xy] = d;
+}
+
+// Levels 2..5: 2x2 min of the previous level.
+[numthreads(8, 8, 1)]
+void HzbDown(uint3 id : SV_DispatchThreadID)
+{
+    uint w, h, sw, sh;
+    _SSGI_HzbOut.GetDimensions(w, h);
+    _SSGI_HzbIn.GetDimensions(sw, sh);
+    if (id.x >= w || id.y >= h) return;
+
+    int2 maxP = int2((int)sw - 1, (int)sh - 1);
+    int2 p = (int2)id.xy * 2;
+    float d = _SSGI_HzbIn.Load(int3(min(p, maxP), 0));
+    d = min(d, _SSGI_HzbIn.Load(int3(min(p + int2(1, 0), maxP), 0)));
+    d = min(d, _SSGI_HzbIn.Load(int3(min(p + int2(0, 1), maxP), 0)));
+    d = min(d, _SSGI_HzbIn.Load(int3(min(p + int2(1, 1), maxP), 0)));
+    _SSGI_HzbOut[id.xy] = d;
+}

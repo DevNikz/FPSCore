@@ -1,0 +1,65 @@
+#pragma kernel Upsample
+
+#include "SSGICore_Common.hlsl"
+
+Texture2D<float4>   _SSGI_FilterIn;
+RWTexture2D<float4> _SSGI_GIOut;
+
+// Depth + normal aware bilateral upsample from trace resolution to full resolution.
+[numthreads(8, 8, 1)]
+void Upsample(uint3 id : SV_DispatchThreadID)
+{
+    int2 fp = (int2)id.xy;
+    int2 fullDim = (int2)_SSGI_FullSize.xy;
+    if (any(fp >= fullDim)) return;
+
+    float raw = _SSGI_Depth.Load(int3(fp, 0));
+    if (IsSkyRaw(raw))
+    {
+        _SSGI_GIOut[fp] = 0;
+        return;
+    }
+
+    float eye = EyeDepthFromRaw(raw);
+    float3 nVS = LoadNormalVS(fp);
+
+    int2 lowDim = (int2)_SSGI_LowSize.xy;
+    float ds = (float)_SSGI_Downsample;
+    float2 lowF = (fp + 0.5 - 0.5 * ds) / ds;
+    int2 b = (int2)floor(lowF);
+    float2 f = lowF - b;
+
+    float3 acc = 0;
+    float wsum = 0;
+
+    [unroll]
+    for (int i = 0; i < 4; i++)
+    {
+        int2 o = int2(i & 1, i >> 1);
+        int2 q = clamp(b + o, int2(0, 0), lowDim - 1);
+        float wb = (o.x == 1 ? f.x : 1.0 - f.x) * (o.y == 1 ? f.y : 1.0 - f.y);
+
+        float eyeQ;
+        float3 posQ, nQ;
+        if (!LoadLowGeo(q, eyeQ, posQ, nQ)) continue;
+
+        float wZ = exp(-abs(eyeQ - eye) / (0.05 * eye + 1e-3));
+        float wN = pow(saturate(dot(nVS, nQ)), 8.0);
+        float w = wb * wZ * wN;
+
+        acc += w * _SSGI_FilterIn.Load(int3(q, 0)).rgb;
+        wsum += w;
+    }
+
+    float3 gi;
+    if (wsum > 1e-4)
+    {
+        gi = acc / wsum;
+    }
+    else
+    {
+        int2 nearest = clamp((int2)(lowF + 0.5), int2(0, 0), lowDim - 1);
+        gi = _SSGI_FilterIn.Load(int3(nearest, 0)).rgb;
+    }
+    _SSGI_GIOut[fp] = float4(gi, 1.0);
+}

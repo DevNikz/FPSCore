@@ -1,0 +1,25 @@
+{
+    "name": "SSGICore.Tests.Runtime",
+    "rootNamespace": "SSGICore.Tests",
+    "references": [
+        "SSGICore.Runtime",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "UnityEngine.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [ "nunit.framework.dll" ],
+    "autoReferenced": false,
+    "defineConstraints": [ "UNITY_INCLUDE_TESTS", "SSGICORE_HAS_URP" ],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "17.0.0",
+            "define": "SSGICORE_HAS_URP"
+        }
+    ],
+    "noEngineReferences": false
+}

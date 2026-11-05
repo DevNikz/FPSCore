@@ -1,0 +1,182 @@
+#pragma kernel Trace
+
+#include "SSGICore_Common.hlsl"
+
+RWTexture2D<float4> _SSGI_TraceOut;
+
+float3 FallbackRadiance(float3 dirVS)
+{
+    float3 d = ViewToWorldDir(dirVS);
+    float3 n2 = d * d;
+    return n2.x * _SSGI_AmbientCube[d.x >= 0.0 ? 0 : 1].rgb
+         + n2.y * _SSGI_AmbientCube[d.y >= 0.0 ? 2 : 3].rgb
+         + n2.z * _SSGI_AmbientCube[d.z >= 0.0 ? 4 : 5].rgb;
+}
+
+// Lit scene colour at a hit pixel: current frame, previous frame (reprojected), or a blend of both.
+float3 SampleLighting(int2 px, float3 posVS)
+{
+    float2 uv = PixelToUV(px);
+    float3 cur = _SSGI_Color.SampleLevel(sampler_linear_clamp, uv, 0).rgb;
+    if (_SSGI_UsePrevColor == 0) return cur;
+
+    float2 puv = PrevUV(px, posVS);
+    if (puv.x <= 0.0 || puv.y <= 0.0 || puv.x >= 1.0 || puv.y >= 1.0) return cur;
+
+    float3 prev = _SSGI_PrevColor.SampleLevel(sampler_linear_clamp, puv, 0).rgb;
+    return lerp(cur, prev, _SSGI_PrevWeight);
+}
+
+float3 ApproxAlbedo(float3 litColor)
+{
+    float m = max(max(litColor.r, litColor.g), litColor.b);
+    return saturate(litColor / max(m, 1e-3)) * _SSGI_AlbedoLevel;
+}
+
+// Hierarchical screen-space march. Returns true on a front-facing hit within the depth thickness.
+bool MarchRay(float3 originVS, float3 dirVS, float jitter, out int2 hitPx)
+{
+    hitPx = int2(0, 0);
+
+    float3 endVS = originVS + dirVS * _SSGI_MaxDistance;
+    if (endVS.z > -_SSGI_Near)
+    {
+        if (dirVS.z <= 1e-5) return false;
+        float t = (-_SSGI_Near - originVS.z) / dirVS.z;
+        if (t <= 0.0) return false;
+        endVS = originVS + dirVS * t;
+    }
+
+    float4 h0 = mul(_SSGI_Proj, float4(originVS, 1.0));
+    float4 h1 = mul(_SSGI_Proj, float4(endVS, 1.0));
+    float k0 = rcp(h0.w);
+    float k1 = rcp(h1.w);
+    float2 s0 = ClipToPixel(h0);
+    float2 s1 = ClipToPixel(h1);
+    float2 dir = s1 - s0;
+
+    // clip the segment to the screen rectangle
+    float2 sz = _SSGI_FullSize.xy;
+    float tx = dir.x > 1e-5 ? (sz.x - 1.0 - s0.x) / dir.x : (dir.x < -1e-5 ? (0.0 - s0.x) / dir.x : 1e9);
+    float ty = dir.y > 1e-5 ? (sz.y - 1.0 - s0.y) / dir.y : (dir.y < -1e-5 ? (0.0 - s0.y) / dir.y : 1e9);
+    float tMax = min(1.0, min(tx, ty));
+    if (tMax <= 0.0) return false;
+    dir *= tMax;
+    k1 = lerp(k0, k1, tMax);
+
+    float len = max(abs(dir.x), abs(dir.y));
+    if (len < 1.0) return false;
+
+    float du = 1.0 / len;
+    float u = du * (1.0 + jitter);
+    int level = 0;
+
+    [loop]
+    for (int i = 0; i < _SSGI_MaxSteps; i++)
+    {
+        if (u >= 1.0) break;
+
+        int2 px = (int2)(s0 + dir * u);
+        float zRay = rcp(lerp(k0, k1, u));
+        float zScene = LoadHzb(level, px >> level);
+
+        if (zRay > zScene)
+        {
+            if (level == 0)
+            {
+                float thick = _SSGI_Thickness * max(1.0, zScene * 0.1);
+                if (zRay - zScene < thick)
+                {
+                    // reject back-facing surfaces
+                    if (dot(LoadNormalVS(px), dirVS) < 0.0)
+                    {
+                        hitPx = px;
+                        return true;
+                    }
+                }
+                u += du;
+            }
+            else
+            {
+                level--;
+            }
+        }
+        else
+        {
+            u += du * (float)(1 << level);
+            level = min(level + 1, 5);
+        }
+    }
+    return false;
+}
+
+float4 TracePath(int2 fp, float3 origin, float3 normalVS, int ray)
+{
+    float3 radiance = 0;
+    float3 throughput = 1;
+    float hitFlag = 0;
+    float3 o = origin;
+    float3 n = normalVS;
+
+    for (int b = 0; b < _SSGI_Bounces; b++)
+    {
+        int seq = ray * 4 + b;
+        float3 d = CosineHemisphere(Sample2D(fp, seq), n);
+        float jitter = frac(IGN((float2)fp + 11.0, _SSGI_FrameIndex) + (float)seq * 0.61803399);
+
+        int2 hitPx;
+        if (!MarchRay(o, d, jitter, hitPx))
+        {
+            radiance += throughput * FallbackRadiance(d) * _SSGI_FallbackIntensity;
+            break;
+        }
+
+        float eyeH = LoadHzb(0, hitPx);
+        float3 posH = ViewPosFromPixel(hitPx, eyeH);
+        float3 Lh = ClampLuma(SampleLighting(hitPx, posH));
+
+        float2 uvH = PixelToUV(hitPx);
+        float2 e = min(uvH, 1.0 - uvH);
+        float fade = saturate(min(e.x, e.y) * _SSGI_EdgeFade);
+        Lh = lerp(FallbackRadiance(d) * _SSGI_FallbackIntensity, Lh, fade);
+
+        radiance += throughput * Lh;
+        if (b == 0) hitFlag = 1.0;
+
+        throughput *= ApproxAlbedo(Lh);
+        n = LoadNormalVS(hitPx);
+        o = posH + n * (0.01 + eyeH * 0.002);
+    }
+    return float4(radiance, hitFlag);
+}
+
+[numthreads(8, 8, 1)]
+void Trace(uint3 id : SV_DispatchThreadID)
+{
+    int2 lp = (int2)id.xy;
+    if (any(lp >= (int2)_SSGI_LowSize.xy)) return;
+
+    int2 fp = LowToFull(lp);
+    float raw = _SSGI_Depth.Load(int3(fp, 0));
+    if (IsSkyRaw(raw))
+    {
+        _SSGI_TraceOut[lp] = 0;
+        return;
+    }
+
+    float eye = EyeDepthFromRaw(raw);
+    float3 posVS = ViewPosFromPixel(fp, eye);
+    float3 nVS = LoadNormalVS(fp);
+    float3 origin = posVS + nVS * (0.01 + eye * 0.002);
+
+    float3 sum = 0;
+    float hits = 0;
+    for (int r = 0; r < _SSGI_RayCount; r++)
+    {
+        float4 res = TracePath(fp, origin, nVS, r);
+        sum += res.rgb;
+        hits += res.a;
+    }
+    float inv = rcp((float)_SSGI_RayCount);
+    _SSGI_TraceOut[lp] = float4(sum * inv, hits * inv);
+}
