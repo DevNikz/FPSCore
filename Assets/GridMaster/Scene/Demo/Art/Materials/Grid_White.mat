@@ -26,10 +26,11 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _CHECKERLINES_ON
   - _DEBUGUV_ON
   - _DISTANCEFADE_ON
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -60,6 +61,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LabelAtlas:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -104,6 +109,7 @@ Material:
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
     - _CellSize: 1
+    - _CheckerLines: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
@@ -117,18 +123,27 @@ Material:
     - _EnvironmentReflections: 1
     - _FadeEnd: 100
     - _FadeStart: 30
+    - _GlobalScaleMode: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _LabelMinPixelHeight: 10
+    - _LabelSize: 0.5
+    - _LabelSoftness: 1
+    - _LabelUnit: 1
+    - _LabelsEnabled: 0
     - _LineSoftness: 1
+    - _MajorDotSize: 0.25
     - _MajorFadeMultiplier: 3
     - _MajorInterval: 5
     - _MajorLineWidth: 0.075
     - _Metallic: 0
+    - _MinorDotSize: 0.12
     - _MinorLineWidth: 0.02
     - _ObjectUVTiling: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _PatternMode: 0
     - _Projection: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -147,8 +162,11 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CheckerColor: {r: 0.41999996, g: 0.41999996, b: 0.41999996, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _LabelColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+    - _LabelOffset: {r: 0.12, g: 0.12, b: 0, a: 0}
     - _LineColor: {r: 0.14999998, g: 0.14999998, b: 0.14999998, a: 1}
     - _MajorLineColor: {r: 0.049999982, g: 0.049999982, b: 0.049999982, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

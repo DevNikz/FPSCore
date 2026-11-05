@@ -27,7 +27,7 @@ MonoBehaviour:
   m_HDRColorBufferPrecision: 0
   m_MSAA: 1
   m_RenderScale: 1
-  m_UpscalingFilter: 0
+  m_UpscalingFilter: 1
   m_FsrOverrideSharpness: 0
   m_FsrSharpness: 0.92
   m_EnableLODCrossFade: 1
@@ -45,9 +45,9 @@ MonoBehaviour:
   m_MainLightShadowsSupported: 1
   m_MainLightShadowmapResolution: 1024
   m_AdditionalLightsRenderingMode: 1
-  m_AdditionalLightsPerObjectLimit: 5
+  m_AdditionalLightsPerObjectLimit: 4
   m_AdditionalLightShadowsSupported: 1
-  m_AdditionalLightsShadowmapResolution: 512
+  m_AdditionalLightsShadowmapResolution: 8192
   m_AdditionalLightsShadowResolutionTierLow: 256
   m_AdditionalLightsShadowResolutionTierMedium: 512
   m_AdditionalLightsShadowResolutionTierHigh: 1024
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_ConservativeEnclosingSphere: 1
   m_NumIterationsEnclosingSphere: 64
   m_SoftShadowQuality: 2
-  m_AdditionalLightsCookieResolution: 1024
+  m_AdditionalLightsCookieResolution: 4096
   m_AdditionalLightsCookieFormat: 3
   m_UseSRPBatcher: 1
   m_SupportsDynamicBatching: 0
