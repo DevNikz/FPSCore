@@ -10,12 +10,12 @@ Material:
   m_Name: Var_Toon 0
   m_Shader: {fileID: 4800000, guid: 86f4f74dee463c144828330124ae5e9a, type: 3}
   m_Parent: {fileID: 2100000, guid: c1d6d1c1056ca8f41887d066c25474ce, type: 2}
-  m_ModifiedSerializedProperties: 0
+  m_ModifiedSerializedProperties: 4
   m_ValidKeywords:
   - _TOON_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap:

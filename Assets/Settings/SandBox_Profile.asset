@@ -202,10 +202,10 @@ MonoBehaviour:
     m_Value: 100
   temporalClamp:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 2
   motionRejection:
     m_OverrideState: 1
-    m_Value: 16
+    m_Value: 8
   normalSource:
     m_OverrideState: 1
     m_Value: 0

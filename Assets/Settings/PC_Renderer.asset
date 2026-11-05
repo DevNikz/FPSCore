@@ -89,7 +89,7 @@ MonoBehaviour:
   settings:
     apply: 1
     normals: 0
-    radius: 1
+    radius: 0.75
     intensity: 1.5
     falloffRange: 0.1
     multiBounce: 0.5
@@ -98,7 +98,7 @@ MonoBehaviour:
     customSlices: 2
     customSteps: 4
     maxPixelRadius: 256
-    downsample: 0
+    downsample: 1
     fadeStart: 60
     fadeEnd: 100
     temporal: 1
