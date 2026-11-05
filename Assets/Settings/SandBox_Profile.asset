@@ -157,13 +157,13 @@ MonoBehaviour:
     m_Value: 3
   resolution:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 4
   rayCount:
     m_OverrideState: 1
     m_Value: 2
   maxSteps:
     m_OverrideState: 1
-    m_Value: 24
+    m_Value: 32
   bounces:
     m_OverrideState: 1
     m_Value: 2
@@ -175,10 +175,10 @@ MonoBehaviour:
     m_Value: 32
   filterIterations:
     m_OverrideState: 1
-    m_Value: 4
+    m_Value: 2
   maxDistance:
     m_OverrideState: 1
-    m_Value: 35
+    m_Value: 25
   thickness:
     m_OverrideState: 1
     m_Value: 1
@@ -193,16 +193,16 @@ MonoBehaviour:
     m_Value: 0.5
   fallbackIntensity:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 0.5
   albedoLevel:
     m_OverrideState: 1
     m_Value: 0.5
   fireflyClamp:
     m_OverrideState: 1
-    m_Value: 25
+    m_Value: 100
   temporalClamp:
     m_OverrideState: 1
-    m_Value: 3
+    m_Value: 1
   motionRejection:
     m_OverrideState: 1
     m_Value: 16

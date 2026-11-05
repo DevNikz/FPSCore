@@ -10,7 +10,7 @@ Material:
   m_Name: Var_Grid 0
   m_Shader: {fileID: 4800000, guid: 5b6e6cd8ebee39b49ad191d4d1c3bb6c, type: 3}
   m_Parent: {fileID: 2100000, guid: 9d1a3241b95263644a92eca04369d3b5, type: 2}
-  m_ModifiedSerializedProperties: 0
+  m_ModifiedSerializedProperties: 4
   m_ValidKeywords:
   - _LABELS
   - _PROJECTION_OBJECT

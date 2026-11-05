@@ -1,5 +1,5 @@
-// StylizedLitInput.hlsl  (Phase 1)
-// Derived from URP 17 (Unity 6000.0) LitInput.hlsl.
+// StylizedLitInput.hlsl  (Phase 4)
+// Derived from URP 17.3 (Unity 6.3) LitInput.hlsl. Phases 3-4 appended the Toon, Rim, Matcap and Outline properties.
 // The UnityPerMaterial layout below is LOCKED for SRP Batcher: it must be identical in every pass.
 // New stylized properties (Phase 3+) are appended to the CBUFFER and to the DOTS block here, never per-pass.
 #ifndef STYLIZED_LIT_INPUT_INCLUDED
@@ -35,6 +35,30 @@ half _ClearCoatSmoothness;
 half _DetailAlbedoMapScale;
 half _DetailNormalMapScale;
 half _Surface;
+// ---- Stylized (appended; never reorder or remove) ----
+half4 _ToonShadowColor;
+half4 _ToonSpecularColor;
+half _ToonStrength;
+half _ToonSteps;
+half _ToonStepSmoothness;
+half _ToonThreshold;
+half _ToonHalfLambert;
+half _ToonAdditionalLights;
+half _ToonSpecularSize;
+half _ToonSpecularSmoothness;
+half _ToonSpecularStrength;
+half4 _RimColor;
+half4 _MatcapTint;
+half4 _OutlineColor;
+half _RimThreshold;
+half _RimSoftness;
+half _RimLightMask;
+half _RimShadowAware;
+half _MatcapStrength;
+half _MatcapBlend;
+half _OutlineEnabled;
+half _OutlineWidth;
+half _OutlineDistanceScaling;
 UNITY_TEXTURE_STREAMING_DEBUG_VARS;
 CBUFFER_END
 
@@ -58,6 +82,29 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float , _DetailAlbedoMapScale)
     UNITY_DOTS_INSTANCED_PROP(float , _DetailNormalMapScale)
     UNITY_DOTS_INSTANCED_PROP(float , _Surface)
+    UNITY_DOTS_INSTANCED_PROP(float4, _ToonShadowColor)
+    UNITY_DOTS_INSTANCED_PROP(float4, _ToonSpecularColor)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonStrength)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonSteps)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonStepSmoothness)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonThreshold)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonHalfLambert)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonAdditionalLights)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonSpecularSize)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonSpecularSmoothness)
+    UNITY_DOTS_INSTANCED_PROP(float , _ToonSpecularStrength)
+    UNITY_DOTS_INSTANCED_PROP(float4, _RimColor)
+    UNITY_DOTS_INSTANCED_PROP(float4, _MatcapTint)
+    UNITY_DOTS_INSTANCED_PROP(float4, _OutlineColor)
+    UNITY_DOTS_INSTANCED_PROP(float , _RimThreshold)
+    UNITY_DOTS_INSTANCED_PROP(float , _RimSoftness)
+    UNITY_DOTS_INSTANCED_PROP(float , _RimLightMask)
+    UNITY_DOTS_INSTANCED_PROP(float , _RimShadowAware)
+    UNITY_DOTS_INSTANCED_PROP(float , _MatcapStrength)
+    UNITY_DOTS_INSTANCED_PROP(float , _MatcapBlend)
+    UNITY_DOTS_INSTANCED_PROP(float , _OutlineEnabled)
+    UNITY_DOTS_INSTANCED_PROP(float , _OutlineWidth)
+    UNITY_DOTS_INSTANCED_PROP(float , _OutlineDistanceScaling)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
@@ -84,6 +131,29 @@ static float  unity_DOTS_Sampled_ClearCoatSmoothness;
 static float  unity_DOTS_Sampled_DetailAlbedoMapScale;
 static float  unity_DOTS_Sampled_DetailNormalMapScale;
 static float  unity_DOTS_Sampled_Surface;
+static float4 unity_DOTS_Sampled_ToonShadowColor;
+static float4 unity_DOTS_Sampled_ToonSpecularColor;
+static float  unity_DOTS_Sampled_ToonStrength;
+static float  unity_DOTS_Sampled_ToonSteps;
+static float  unity_DOTS_Sampled_ToonStepSmoothness;
+static float  unity_DOTS_Sampled_ToonThreshold;
+static float  unity_DOTS_Sampled_ToonHalfLambert;
+static float  unity_DOTS_Sampled_ToonAdditionalLights;
+static float  unity_DOTS_Sampled_ToonSpecularSize;
+static float  unity_DOTS_Sampled_ToonSpecularSmoothness;
+static float  unity_DOTS_Sampled_ToonSpecularStrength;
+static float4 unity_DOTS_Sampled_RimColor;
+static float4 unity_DOTS_Sampled_MatcapTint;
+static float4 unity_DOTS_Sampled_OutlineColor;
+static float  unity_DOTS_Sampled_RimThreshold;
+static float  unity_DOTS_Sampled_RimSoftness;
+static float  unity_DOTS_Sampled_RimLightMask;
+static float  unity_DOTS_Sampled_RimShadowAware;
+static float  unity_DOTS_Sampled_MatcapStrength;
+static float  unity_DOTS_Sampled_MatcapBlend;
+static float  unity_DOTS_Sampled_OutlineEnabled;
+static float  unity_DOTS_Sampled_OutlineWidth;
+static float  unity_DOTS_Sampled_OutlineDistanceScaling;
 
 void SetupDOTSStylizedMaterialPropertyCaches()
 {
@@ -101,6 +171,29 @@ void SetupDOTSStylizedMaterialPropertyCaches()
     unity_DOTS_Sampled_DetailAlbedoMapScale = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _DetailAlbedoMapScale);
     unity_DOTS_Sampled_DetailNormalMapScale = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _DetailNormalMapScale);
     unity_DOTS_Sampled_Surface              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Surface);
+    unity_DOTS_Sampled_ToonShadowColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _ToonShadowColor);
+    unity_DOTS_Sampled_ToonSpecularColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _ToonSpecularColor);
+    unity_DOTS_Sampled_ToonStrength = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonStrength);
+    unity_DOTS_Sampled_ToonSteps = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonSteps);
+    unity_DOTS_Sampled_ToonStepSmoothness = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonStepSmoothness);
+    unity_DOTS_Sampled_ToonThreshold = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonThreshold);
+    unity_DOTS_Sampled_ToonHalfLambert = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonHalfLambert);
+    unity_DOTS_Sampled_ToonAdditionalLights = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonAdditionalLights);
+    unity_DOTS_Sampled_ToonSpecularSize = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonSpecularSize);
+    unity_DOTS_Sampled_ToonSpecularSmoothness = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonSpecularSmoothness);
+    unity_DOTS_Sampled_ToonSpecularStrength = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _ToonSpecularStrength);
+    unity_DOTS_Sampled_RimColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _RimColor);
+    unity_DOTS_Sampled_MatcapTint = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MatcapTint);
+    unity_DOTS_Sampled_OutlineColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _OutlineColor);
+    unity_DOTS_Sampled_RimThreshold = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _RimThreshold);
+    unity_DOTS_Sampled_RimSoftness = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _RimSoftness);
+    unity_DOTS_Sampled_RimLightMask = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _RimLightMask);
+    unity_DOTS_Sampled_RimShadowAware = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _RimShadowAware);
+    unity_DOTS_Sampled_MatcapStrength = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _MatcapStrength);
+    unity_DOTS_Sampled_MatcapBlend = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _MatcapBlend);
+    unity_DOTS_Sampled_OutlineEnabled = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _OutlineEnabled);
+    unity_DOTS_Sampled_OutlineWidth = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _OutlineWidth);
+    unity_DOTS_Sampled_OutlineDistanceScaling = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _OutlineDistanceScaling);
 }
 
 #undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES
@@ -120,12 +213,37 @@ void SetupDOTSStylizedMaterialPropertyCaches()
 #define _DetailAlbedoMapScale   unity_DOTS_Sampled_DetailAlbedoMapScale
 #define _DetailNormalMapScale   unity_DOTS_Sampled_DetailNormalMapScale
 #define _Surface                unity_DOTS_Sampled_Surface
+#define _ToonShadowColor        unity_DOTS_Sampled_ToonShadowColor
+#define _ToonSpecularColor      unity_DOTS_Sampled_ToonSpecularColor
+#define _ToonStrength           unity_DOTS_Sampled_ToonStrength
+#define _ToonSteps              unity_DOTS_Sampled_ToonSteps
+#define _ToonStepSmoothness     unity_DOTS_Sampled_ToonStepSmoothness
+#define _ToonThreshold          unity_DOTS_Sampled_ToonThreshold
+#define _ToonHalfLambert        unity_DOTS_Sampled_ToonHalfLambert
+#define _ToonAdditionalLights   unity_DOTS_Sampled_ToonAdditionalLights
+#define _ToonSpecularSize       unity_DOTS_Sampled_ToonSpecularSize
+#define _ToonSpecularSmoothness unity_DOTS_Sampled_ToonSpecularSmoothness
+#define _ToonSpecularStrength   unity_DOTS_Sampled_ToonSpecularStrength
+#define _RimColor               unity_DOTS_Sampled_RimColor
+#define _MatcapTint             unity_DOTS_Sampled_MatcapTint
+#define _OutlineColor           unity_DOTS_Sampled_OutlineColor
+#define _RimThreshold           unity_DOTS_Sampled_RimThreshold
+#define _RimSoftness            unity_DOTS_Sampled_RimSoftness
+#define _RimLightMask           unity_DOTS_Sampled_RimLightMask
+#define _RimShadowAware         unity_DOTS_Sampled_RimShadowAware
+#define _MatcapStrength         unity_DOTS_Sampled_MatcapStrength
+#define _MatcapBlend            unity_DOTS_Sampled_MatcapBlend
+#define _OutlineEnabled         unity_DOTS_Sampled_OutlineEnabled
+#define _OutlineWidth           unity_DOTS_Sampled_OutlineWidth
+#define _OutlineDistanceScaling unity_DOTS_Sampled_OutlineDistanceScaling
 
 #endif
 
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
 TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_DetailMask);         SAMPLER(sampler_DetailMask);
+TEXTURE2D(_ToonRampMap);        SAMPLER(sampler_ToonRampMap); // import with Wrap Mode = Clamp
+TEXTURE2D(_MatcapMap);           SAMPLER(sampler_MatcapMap);
 TEXTURE2D(_DetailAlbedoMap);    SAMPLER(sampler_DetailAlbedoMap);
 TEXTURE2D(_DetailNormalMap);    SAMPLER(sampler_DetailNormalMap);
 TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);

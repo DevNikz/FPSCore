@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Var_Toon 0
+  m_Shader: {fileID: 4800000, guid: 86f4f74dee463c144828330124ae5e9a, type: 3}
+  m_Parent: {fileID: 2100000, guid: c1d6d1c1056ca8f41887d066c25474ce, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _TOON_ON
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses:
+  - SRPDEFAULTUNLIT
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _ToonRampMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ToonAdditionalLights: 1
+    - _ToonEnabled: 1
+    - _ToonHalfLambert: 0
+    - _ToonStepSmoothness: 0.1
+    - _ToonSteps: 4
+    - _ToonStrength: 1
+    - _ToonThreshold: 0
+    m_Colors:
+    - _BaseColor: {r: 0.76862746, g: 0.8862745, b: 0.47058824, a: 1}
+    - _Color: {r: 0.76862746, g: 0.8862745, b: 0.47058815, a: 1}
+    - _ToonShadowColor: {r: 0.12322002, g: 0.12322002, b: 0.6698113, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &9151203935837964252
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10

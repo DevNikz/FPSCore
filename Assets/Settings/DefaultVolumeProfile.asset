@@ -22,6 +22,85 @@ MonoBehaviour:
   gain:
     m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1, w: 0}
+--- !u!114 &-8355625241410349551
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57bda941a76191d4b93b62d53fb45818, type: 3}
+  m_Name: SSGICoreVolume
+  m_EditorClassIdentifier: SSGICore.Runtime::SSGICore.SSGICoreVolume
+  active: 1
+  enable:
+    m_OverrideState: 1
+    m_Value: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 1
+  quality:
+    m_OverrideState: 1
+    m_Value: 1
+  resolution:
+    m_OverrideState: 1
+    m_Value: 2
+  rayCount:
+    m_OverrideState: 1
+    m_Value: 1
+  maxSteps:
+    m_OverrideState: 1
+    m_Value: 24
+  bounces:
+    m_OverrideState: 1
+    m_Value: 2
+  temporal:
+    m_OverrideState: 1
+    m_Value: 1
+  temporalFrames:
+    m_OverrideState: 1
+    m_Value: 16
+  filterIterations:
+    m_OverrideState: 1
+    m_Value: 3
+  maxDistance:
+    m_OverrideState: 1
+    m_Value: 20
+  thickness:
+    m_OverrideState: 1
+    m_Value: 0.2
+  edgeFade:
+    m_OverrideState: 1
+    m_Value: 8
+  lightingSource:
+    m_OverrideState: 1
+    m_Value: 2
+  previousFrameWeight:
+    m_OverrideState: 1
+    m_Value: 0.5
+  fallbackIntensity:
+    m_OverrideState: 1
+    m_Value: 1
+  albedoLevel:
+    m_OverrideState: 1
+    m_Value: 0.5
+  fireflyClamp:
+    m_OverrideState: 1
+    m_Value: 20
+  temporalClamp:
+    m_OverrideState: 1
+    m_Value: 2
+  motionRejection:
+    m_OverrideState: 1
+    m_Value: 8
+  normalSource:
+    m_OverrideState: 1
+    m_Value: 0
+  debugView:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-8270506406425502121
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -468,6 +547,7 @@ MonoBehaviour:
   - {fileID: -6288072647309666549}
   - {fileID: 7518938298396184218}
   - {fileID: -1410297666881709256}
+  - {fileID: -8355625241410349551}
 --- !u!114 &853819529557874667
 MonoBehaviour:
   m_ObjectHideFlags: 3
